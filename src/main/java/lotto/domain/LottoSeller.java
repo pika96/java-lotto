@@ -8,7 +8,7 @@ import java.util.List;
 
 public class LottoSeller {
 
-    public static final int LOTTO_PRICE = 1000;
+    private static final int LOTTO_PRICE = 1000;
     private static final int MIN_COUNT = 1;
 
     public static LottoGroup sellLotto(final Money money, final int manualCount, List<Lotto> manualLottos) {
@@ -23,8 +23,14 @@ public class LottoSeller {
     }
 
     private static void validateCount(int count, int manualCount) {
-        if(count < MIN_COUNT || count < manualCount)
+        if (count < MIN_COUNT || count < manualCount)
             throw new LottoPriceException("가격이 부족합니다.");
+    }
+
+    public static void validatePrice(Money money) {
+        if (money.divide(LOTTO_PRICE) < 1) {
+            throw new LottoPriceException("가격이 부족합니다.");
+        }
     }
 
     public static int lottoPrice() {

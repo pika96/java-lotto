@@ -1,8 +1,10 @@
 package lotto.view;
 
 import lotto.domain.LottoNumber;
+import lotto.domain.LottoSeller;
 import lotto.domain.Money;
 import lotto.exception.LottoException;
+import lotto.exception.LottoPriceException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,8 +25,9 @@ public class InputView {
     public static Money getMoney() {
         try {
             OutputView.printMessage(INPUT_MONEY_MESSAGE);
-            int money = Integer.parseInt(SCAN.nextLine());
-            return Money.of(money);
+            Money money = Money.of(Integer.parseInt(SCAN.nextLine()));
+            validateMinLottoPrice(money);
+            return money;
         } catch (NumberFormatException e) {
             OutputView.printMessage(NUMBER_FORMAT_ERROR_MESSAGE);
             return getMoney();
@@ -32,6 +35,10 @@ public class InputView {
             OutputView.printMessage(e.getMessage());
             return getMoney();
         }
+    }
+
+    private static void validateMinLottoPrice(Money money) {
+        LottoSeller.validatePrice(money);
     }
 
     public static List<Integer> getWinningNumbers() {
@@ -65,19 +72,24 @@ public class InputView {
         try {
             OutputView.printMessage(INPUT_MANUAL_COUNT_MESSAGE);
             int count = Integer.parseInt(SCAN.nextLine());
-            if (count < 0) {
-                throw new IllegalArgumentException("숫자는 음수가 될 수 없습니다.");
-            }
-            if (money.compareMoneyWithLottoCount(count)) {
-                throw new IllegalArgumentException("가격이 부족합니다.");
-            }
+            validateManualLottoCount(money, count);
             return count;
         } catch (NumberFormatException e) {
             OutputView.printMessage(NUMBER_FORMAT_ERROR_MESSAGE);
             return getManualLottoCount(money);
-        } catch (IllegalArgumentException e) {
+        } catch (LottoException | IllegalArgumentException e) {
             OutputView.printMessage(e.getMessage());
             return getManualLottoCount(money);
+        }
+    }
+
+    private static void validateManualLottoCount(Money money, int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("숫자는 음수가 될 수 없습니다.");
+        }
+
+        if (money.divide(LottoSeller.lottoPrice()) < count) {
+            throw new LottoPriceException("가격이 부족합니다.");
         }
     }
 

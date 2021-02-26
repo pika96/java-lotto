@@ -44,10 +44,10 @@ public class LottoManager {
             return LottoSeller.sellLotto(money, manualCount, createManualLotto(InputView.getManualNumbers(manualCount)));
         } catch (LottoException e) {
             OutputView.printMessage(e.getMessage());
-            return createLottoGroup(InputView.getMoney(), manualCount);
+            return createLottoGroup(money, manualCount);
         } catch (NumberFormatException e) {
             OutputView.printMessage("숫자를 입력해주세요.");
-            return createLottoGroup(InputView.getMoney(), manualCount);
+            return createLottoGroup(money, manualCount);
         }
     }
 
